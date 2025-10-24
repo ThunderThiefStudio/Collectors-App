@@ -109,7 +109,9 @@ class ItemUpdate(BaseModel):
     barcode: Optional[str] = None
     purchase_price: Optional[float] = None
     current_value: Optional[float] = None
+    asking_price: Optional[float] = None
     condition: Optional[str] = None
+    status: Optional[str] = None
     is_wishlist: Optional[bool] = None
     custom_fields: Optional[dict] = None
 
