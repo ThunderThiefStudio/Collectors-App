@@ -95,7 +95,9 @@ class ItemCreate(BaseModel):
     barcode: Optional[str] = None
     purchase_price: Optional[float] = 0.0
     current_value: Optional[float] = 0.0
+    asking_price: Optional[float] = 0.0
     condition: Optional[str] = "good"
+    status: Optional[str] = "owned"  # owned, looking_for, selling
     is_wishlist: bool = False
     custom_fields: Optional[dict] = {}
 
