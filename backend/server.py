@@ -257,7 +257,7 @@ async def delete_collection(collection_id: str, user_id: str = Depends(get_curre
 # Item Routes
 @api_router.get("/items", response_model=List[ItemResponse])
 async def get_items(user_id: str = Depends(get_current_user)):
-    items = await db.items.find({"user_id": user_id, "is_wishlist": False}).to_list(1000)
+    items = await db.items.find({" user_id": user_id, "is_wishlist": False}).to_list(1000)
     return [ItemResponse(
         id=str(item["_id"]),
         collection_id=item.get("collection_id"),
@@ -267,7 +267,9 @@ async def get_items(user_id: str = Depends(get_current_user)):
         barcode=item.get("barcode"),
         purchase_price=item.get("purchase_price", 0.0),
         current_value=item.get("current_value", 0.0),
+        asking_price=item.get("asking_price", 0.0),
         condition=item.get("condition", "good"),
+        status=item.get("status", "owned"),
         is_wishlist=item.get("is_wishlist", False),
         custom_fields=item.get("custom_fields", {}),
         created_at=item["created_at"],
