@@ -124,7 +124,9 @@ class ItemResponse(BaseModel):
     barcode: Optional[str]
     purchase_price: float
     current_value: float
+    asking_price: float
     condition: str
+    status: str
     is_wishlist: bool
     custom_fields: dict
     created_at: datetime
