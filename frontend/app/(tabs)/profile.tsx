@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f172a',
+    paddingBottom: 60,
   },
   header: {
     alignItems: 'center',
