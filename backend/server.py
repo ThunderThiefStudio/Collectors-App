@@ -288,9 +288,7 @@ async def get_wishlist_items(user_id: str = Depends(get_current_user)):
         barcode=item.get("barcode"),
         purchase_price=item.get("purchase_price", 0.0),
         current_value=item.get("current_value", 0.0),
-        asking_price=item.get("asking_price", 0.0),
         condition=item.get("condition", "good"),
-        status=item.get("status", "owned"),
         is_wishlist=item.get("is_wishlist", False),
         custom_fields=item.get("custom_fields", {}),
         created_at=item["created_at"],
@@ -309,9 +307,7 @@ async def get_collection_items(collection_id: str, user_id: str = Depends(get_cu
         barcode=item.get("barcode"),
         purchase_price=item.get("purchase_price", 0.0),
         current_value=item.get("current_value", 0.0),
-        asking_price=item.get("asking_price", 0.0),
         condition=item.get("condition", "good"),
-        status=item.get("status", "owned"),
         is_wishlist=item.get("is_wishlist", False),
         custom_fields=item.get("custom_fields", {}),
         created_at=item["created_at"],
@@ -329,9 +325,7 @@ async def create_item(item: ItemCreate, user_id: str = Depends(get_current_user)
         "barcode": item.barcode,
         "purchase_price": item.purchase_price,
         "current_value": item.current_value,
-        "asking_price": item.asking_price,
         "condition": item.condition,
-        "status": item.status,
         "is_wishlist": item.is_wishlist,
         "custom_fields": item.custom_fields or {},
         "created_at": datetime.utcnow(),
@@ -347,9 +341,7 @@ async def create_item(item: ItemCreate, user_id: str = Depends(get_current_user)
         barcode=item.barcode,
         purchase_price=item.purchase_price,
         current_value=item.current_value,
-        asking_price=item.asking_price,
         condition=item.condition,
-        status=item.status,
         is_wishlist=item.is_wishlist,
         custom_fields=item.custom_fields or {},
         created_at=item_dict["created_at"],
@@ -371,9 +363,7 @@ async def get_item(item_id: str, user_id: str = Depends(get_current_user)):
         barcode=item.get("barcode"),
         purchase_price=item.get("purchase_price", 0.0),
         current_value=item.get("current_value", 0.0),
-        asking_price=item.get("asking_price", 0.0),
         condition=item.get("condition", "good"),
-        status=item.get("status", "owned"),
         is_wishlist=item.get("is_wishlist", False),
         custom_fields=item.get("custom_fields", {}),
         created_at=item["created_at"],
@@ -403,10 +393,6 @@ async def update_item(item_id: str, item_update: ItemUpdate, user_id: str = Depe
         update_dict["purchase_price"] = item_update.purchase_price
     if item_update.current_value is not None:
         update_dict["current_value"] = item_update.current_value
-    if item_update.asking_price is not None:
-        update_dict["asking_price"] = item_update.asking_price
-    if item_update.status is not None:
-        update_dict["status"] = item_update.status
     if item_update.condition is not None:
         update_dict["condition"] = item_update.condition
     if item_update.is_wishlist is not None:
@@ -427,9 +413,7 @@ async def update_item(item_id: str, item_update: ItemUpdate, user_id: str = Depe
         barcode=updated_item.get("barcode"),
         purchase_price=updated_item.get("purchase_price", 0.0),
         current_value=updated_item.get("current_value", 0.0),
-        asking_price=updated_item.get("asking_price", 0.0),
         condition=updated_item.get("condition", "good"),
-        status=updated_item.get("status", "owned"),
         is_wishlist=updated_item.get("is_wishlist", False),
         custom_fields=updated_item.get("custom_fields", {}),
         created_at=updated_item["created_at"],
@@ -463,9 +447,7 @@ async def search_items(query: str, user_id: str = Depends(get_current_user)):
         barcode=item.get("barcode"),
         purchase_price=item.get("purchase_price", 0.0),
         current_value=item.get("current_value", 0.0),
-        asking_price=item.get("asking_price", 0.0),
         condition=item.get("condition", "good"),
-        status=item.get("status", "owned"),
         is_wishlist=item.get("is_wishlist", False),
         custom_fields=item.get("custom_fields", {}),
         created_at=item["created_at"],
