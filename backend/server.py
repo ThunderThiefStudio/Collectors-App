@@ -295,6 +295,25 @@ async def get_wishlist_items(user_id: str = Depends(get_current_user)):
         updated_at=item["updated_at"]
     ) for item in items]
 
+@api_router.get("/items/status/{status}", response_model=List[ItemResponse])
+async def get_items_by_status(status: str, user_id: str = Depends(get_current_user)):
+    items = await db.items.find({"user_id": user_id, "status": status}).to_list(1000)
+    return [ItemResponse(
+        id=str(item["_id"]),
+        collection_id=item.get("collection_id"),
+        name=item["name"],
+        description=item.get("description", ""),
+        images=item.get("images", []),
+        barcode=item.get("barcode"),
+        purchase_price=item.get("purchase_price", 0.0),
+        current_value=item.get("current_value", 0.0),
+        condition=item.get("condition", "good"),
+        is_wishlist=item.get("is_wishlist", False),
+        custom_fields=item.get("custom_fields", {}),
+        created_at=item["created_at"],
+        updated_at=item["updated_at"]
+    ) for item in items]
+
 @api_router.get("/items/collection/{collection_id}", response_model=List[ItemResponse])
 async def get_collection_items(collection_id: str, user_id: str = Depends(get_current_user)):
     items = await db.items.find({"collection_id": collection_id, "user_id": user_id}).to_list(1000)
