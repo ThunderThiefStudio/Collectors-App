@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
 
-interface Collection {
+interface Item {
   id: string;
   name: string;
-  category: string;
   description: string;
-  item_count: number;
-  created_at: string;
+  images: string[];
+  condition: string;
+  current_value: number;
+  asking_price?: number;
 }
 
-export default function HomeScreen() {
-  const [collections, setCollections] = useState<Collection[]>([]);
+export default function SellingScreen() {
+  const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
@@ -26,15 +27,15 @@ export default function HomeScreen() {
       router.replace('/');
       return;
     }
-    fetchCollections();
+    fetchSellingItems();
   }, [token]);
 
-  const fetchCollections = async () => {
+  const fetchSellingItems = async () => {
     try {
-      const response = await api.get('/collections');
-      setCollections(response.data);
+      const response = await api.get('/items/status/selling');
+      setItems(response.data);
     } catch (error) {
-      console.error('Error fetching collections:', error);
+      console.error('Error fetching selling items:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -43,31 +44,36 @@ export default function HomeScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchCollections();
+    fetchSellingItems();
   };
 
-  const renderCollection = ({ item }: { item: Collection }) => (
+  const renderItem = ({ item }: { item: Item }) => (
     <TouchableOpacity
-      style={styles.collectionCard}
-      onPress={() => router.push(`/collection/${item.id}`)}
+      style={styles.itemCard}
+      onPress={() => router.push(`/item/${item.id}`)}
     >
-      <View style={styles.collectionHeader}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="albums" size={32} color="#6366f1" />
+      {item.images && item.images.length > 0 ? (
+        <Image
+          source={{ uri: item.images[0] }}
+          style={styles.itemImage}
+        />
+      ) : (
+        <View style={[styles.itemImage, styles.placeholderImage]}>
+          <Ionicons name="image-outline" size={32} color="#64748b" />
         </View>
-        <View style={styles.collectionInfo}>
-          <Text style={styles.collectionName}>{item.name}</Text>
-          <Text style={styles.collectionCategory}>{item.category}</Text>
-        </View>
-        <View style={styles.countBadge}>
-          <Text style={styles.countText}>{item.item_count}</Text>
-        </View>
+      )}
+      <View style={styles.itemInfo}>
+        <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.itemCondition}>{item.condition}</Text>
+        {item.asking_price && item.asking_price > 0 ? (
+          <Text style={styles.itemPrice}>${item.asking_price.toFixed(2)}</Text>
+        ) : (
+          <Text style={styles.itemPrice}>Price TBD</Text>
+        )}
       </View>
-      {item.description ? (
-        <Text style={styles.collectionDescription} numberOfLines={2}>
-          {item.description}
-        </Text>
-      ) : null}
+      <View style={styles.sellingBadge}>
+        <Ionicons name="pricetag" size={16} color="#10b981" />
+      </View>
     </TouchableOpacity>
   );
 
@@ -82,24 +88,25 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={collections}
-        renderItem={renderCollection}
+        data={items}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        numColumns={2}
         contentContainerStyle={styles.listContainer}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#6366f1" />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="albums-outline" size={64} color="#475569" />
-            <Text style={styles.emptyText}>No collections yet</Text>
-            <Text style={styles.emptySubtext}>Create your first collection to get started</Text>
+            <Ionicons name="pricetag-outline" size={64} color="#475569" />
+            <Text style={styles.emptyText}>No items for sale</Text>
+            <Text style={styles.emptySubtext}>Mark items as 'selling' to see them here</Text>
           </View>
         }
       />
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push('/collection/add')}
+        onPress={() => router.push('/item/add')}
       >
         <Ionicons name="add" size={32} color="#ffffff" />
       </TouchableOpacity>
@@ -120,59 +127,58 @@ const styles = StyleSheet.create({
     backgroundColor: '#0f172a',
   },
   listContainer: {
-    padding: 16,
+    padding: 8,
     paddingBottom: 100,
   },
-  collectionCard: {
+  itemCard: {
+    flex: 1,
     backgroundColor: '#1e293b',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    margin: 8,
     borderWidth: 1,
     borderColor: '#334155',
+    overflow: 'hidden',
+    position: 'relative',
   },
-  collectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  itemImage: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#334155',
   },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#312e81',
+  placeholderImage: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
-  collectionInfo: {
-    flex: 1,
+  itemInfo: {
+    padding: 12,
   },
-  collectionName: {
-    fontSize: 18,
+  itemName: {
+    fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
     marginBottom: 4,
   },
-  collectionCategory: {
-    fontSize: 14,
+  itemCondition: {
+    fontSize: 12,
     color: '#9ca3af',
     textTransform: 'capitalize',
+    marginBottom: 4,
   },
-  countBadge: {
-    backgroundColor: '#6366f1',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  countText: {
-    color: '#ffffff',
+  itemPrice: {
+    fontSize: 14,
     fontWeight: '600',
-    fontSize: 14,
+    color: '#10b981',
   },
-  collectionDescription: {
-    color: '#cbd5e1',
-    fontSize: 14,
-    marginTop: 12,
+  sellingBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#064e3b',
+    borderRadius: 16,
+    width: 28,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyContainer: {
     alignItems: 'center',
