@@ -1,4 +1,4 @@
-{
+﻿{
   "cli": {
     "version": ">= 16.26.0",
     "appVersionSource": "remote"
@@ -15,12 +15,12 @@
     },
     "production": {
       "autoIncrement": true,
-      "node": "20.19.4"
-    }
-  },
-  "hooks": {
-    "postBuild": {
-      "node": "scripts/post-build.js"
+      "node": "20.19.4",
+      "hooks": {
+        "postBuild": {
+          "node": "scripts/post-build.js"
+        }
+      }
     }
   },
   "submit": {
